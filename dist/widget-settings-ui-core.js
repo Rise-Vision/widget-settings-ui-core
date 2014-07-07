@@ -2,8 +2,8 @@
 angular.module('risevision.widget.common', []);
 
 angular.module('risevision.widget.common')
-  .controller('settingsController', ['$scope', 'settingsSaver', 'settingsGetter',
-    function ($scope, settingsSaver, settingsGetter) {
+  .controller('settingsController', ['$scope', 'settingsSaver', 'settingsGetter', 'defaultSettings',
+    function ($scope, settingsSaver, settingsGetter, defaultSettings) {
 
     $scope.settings = { params: {}, additionalParams: {}};
     $scope.alerts = [];
@@ -48,6 +48,7 @@ angular.module('risevision.widget.common')
     };
 
     $scope.settings.params = settingsGetter.getParams();
+    $scope.settings.additionalParams = defaultSettings.additionalParams || {};
     $scope.loadAdditionalParams();
   }])
 
