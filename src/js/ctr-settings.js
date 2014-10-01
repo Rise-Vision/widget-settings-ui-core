@@ -1,6 +1,6 @@
 angular.module("risevision.widget.common")
-  .controller("settingsController", ["$scope", "settingsSaver", "settingsGetter", "settingsCloser",
-    function ($scope, settingsSaver, settingsGetter, settingsCloser) {
+  .controller("settingsController", ["$scope", "$timeout", "settingsSaver", "settingsGetter", "settingsCloser",
+    function ($scope, $timeout, settingsSaver, settingsGetter, settingsCloser) {
 
     $scope.settings = { params: {}, additionalParams: {}};
     $scope.alerts = [];
@@ -35,14 +35,15 @@ angular.module("risevision.widget.common")
       //clear out previous alerts, if any
       $scope.alerts = [];
 
-      $scope.$broadcast("collectAdditionalParams");
+      $scope.$apply($scope.$broadcast("collectAdditionalParams"));
 
-      settingsSaver.saveSettings($scope.settings).then(function () {
-        //TODO: perhaps show some indicator in UI?
-      }, function (err) {
-        $scope.alerts = err.alerts;
-      });
-
+      $timeout(function () {
+        settingsSaver.saveSettings($scope.settings).then(function () {
+          //TODO: perhaps show some indicator in UI?
+        }, function (err) {
+          $scope.alerts = err.alerts;
+        });
+      }, 0);
     };
 
     $scope.closeSettings = function() {
