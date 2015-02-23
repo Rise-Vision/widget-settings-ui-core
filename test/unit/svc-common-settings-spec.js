@@ -52,13 +52,21 @@ describe("Common Settings", function() {
 
     it("should return an object with empty fileName value", function () {
       // storage url, file was not within a folder(s)
-      var url = "https://www.googleapis.com/storage/v1/b/risemedialibrary-xxx/o?prefix=images%2F";
+      var url = "https://www.googleapis.com/storage/v1/b/risemedialibrary-xxx/o?prefix=images%2F",
+        nestedUrl = "https://www.googleapis.com/storage/v1/b/risemedialibrary-xxx/o?prefix=images%2Fpng%2F";
 
       expect(commonSettings.getStorageUrlData(url)).to.deep.equal({
-        "folder": "images/",
+        "folder": "images",
+        "fileName": ""
+      });
+
+      // storage folder selected, and folder is nested
+      expect(commonSettings.getStorageUrlData(nestedUrl)).to.deep.equal({
+        "folder": "png",
         "fileName": ""
       });
     });
+
   });
 
 });
