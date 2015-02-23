@@ -99,8 +99,12 @@ angular.module("risevision.widget.common")
           for (var i = 0; i < params.length; i++) {
             pair = params[i].split("=");
 
-            if (pair[0] === "prefix") {
-              storage.folder = decodeURIComponent(pair[1]);
+            if (pair[0] === "prefix" && typeof pair[1] !== "undefined" && pair[1] !== "") {
+              str = decodeURIComponent(pair[1]);
+              arr = str.split("/");
+
+              // set to the most deeply nested folder
+              storage.folder = arr[arr.length - 2];
               storage.fileName = "";
               break;
             }
