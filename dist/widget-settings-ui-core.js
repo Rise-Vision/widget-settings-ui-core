@@ -146,7 +146,7 @@ angular.module("risevision.widget.common")
   }]);
 
 angular.module("risevision.widget.common")
-  .factory("googleFontLoader", ["$http", "angularLoad", function ($http, angularLoad) {
+  .factory("googleFontLoader", ["$http", "$q", "angularLoad", function ($http, $q, angularLoad) {
 
     var factory = {},
       allFonts = [];
@@ -195,22 +195,19 @@ angular.module("risevision.widget.common")
 
     /* Load the Google fonts. */
     function loadFonts() {
-      var family = "",
-        fonts = "",
-        url = "",
+      var fonts = "",
         urls = [],
-        spaces = false,
-        fallback = ",sans-serif;",
-        fontBaseUrl = "//fonts.googleapis.com/css?family=",
-        exclude = ["Buda", "Coda Caption", "Open Sans Condensed", "UnifrakturCook", "Molle"];
+        promises = [];
 
-      for (var i = 0; i < allFonts.length; i++) {
-        family = allFonts[i];
+      angular.forEach(allFonts, function(family){
+        var deferred  = $q.defer();
 
-        if (exclude.indexOf(family) === -1) {
-          url = fontBaseUrl + family;
+        var fontBaseUrl = "//fonts.googleapis.com/css?family=";
+        var url = fontBaseUrl + family;
+        var spaces = false;
+        var fallback = ",sans-serif;";
 
-          angularLoad.loadCSS(url);
+        angularLoad.loadCSS(url).then(function(){
           urls.push(url);
 
           // check for spaces in family name
@@ -225,10 +222,17 @@ angular.module("risevision.widget.common")
           else {
             fonts += family + "=" + family + fallback;
           }
-        }
-      }
 
-      return { fonts: fonts, urls: urls };
+          deferred.resolve({ fonts: fonts, urls: urls });
+        })
+        .catch(function() {
+          deferred.resolve({ fonts: fonts, urls: urls });
+        });
+
+        promises.push(deferred.promise);
+      });
+
+      return $q.all(promises);
     }
 
     return factory;
